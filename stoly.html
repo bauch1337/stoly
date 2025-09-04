@@ -19,6 +19,10 @@
       .sheet{ page-break-after: always; }
       .sheet:last-child{ page-break-after: auto; }
     }
+      #controls{ display:none !important; }
+      .sheet{ page-break-after: always; }
+      .sheet:last-child{ page-break-after: auto; }
+    }
 
     body{
       margin:0; background:#e8e8e8; font-family:"Lexend", system-ui, sans-serif; color:var(--text);
@@ -27,7 +31,8 @@
     .sheet{ width: 210mm; min-height: 297mm; margin: 0 auto; background:white; padding:16mm; box-sizing:border-box; display:flex; align-items:center; justify-content:center; }
 
     .card{ 
-      width: 118mm; min-height: 170mm; padding: 22mm 20mm; box-sizing:border-box; position:relative; 
+      width: 150mm; min-height: 210mm; /* zvětšeno */
+      padding: 28mm 24mm; box-sizing:border-box; position:relative; 
       --frame-url: url('https://zbiroh.b-cdn.net/b.png');
       display:flex; flex-direction:column; align-items:center; justify-content:center;
       text-align:center;
@@ -37,9 +42,9 @@
       background-repeat:no-repeat; background-position:center; background-size:contain; opacity:1; pointer-events:none;
     }
 
-    .title{ font-family:"Cinzel", serif; font-weight:800; font-size: 22pt; letter-spacing: .5px; color:var(--accent); text-align:center; margin:0 0 12mm 0; }
+    .title{ font-family:"Cinzel", serif; font-weight:800; font-size: 26pt; letter-spacing: .5px; color:var(--accent); text-align:center; margin:0 0 14mm 0; }
     .names{ list-style:none; padding:0; margin:0; text-align:center; }
-    .names li{ font-size: 14pt; line-height:1.5; margin:2mm 0; font-family:"Lexend", system-ui, sans-serif; }
+    .names li{ font-size: 16pt; line-height:1.55; margin:2.5mm 0; font-family:"Lexend", system-ui, sans-serif; }
     .names li strong{ font-family:"Cinzel", serif; font-weight:700; }
 
     #controls{ position:sticky; top:0; z-index:999; background:#111; color:#fff; padding:10px 14px; display:flex; gap:8px; align-items:center; justify-content:center; }
