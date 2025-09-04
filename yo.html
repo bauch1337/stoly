@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Zasedací pořádek – finální verze</title>
+  <!-- Google Fonts (Cinzel + Lexend) -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --accent:#c4a75a;
+      --text:#222;
+    }
+
+    @page { size: A4; margin: 16mm; }
+    @media print { 
+      body{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      #controls{ display:none !important; }
+      .sheet{ page-break-after: always; }
+      .sheet:last-child{ page-break-after: auto; }
+    }
+
+    body{
+      margin:0; background:#e8e8e8; font-family:"Lexend", system-ui, sans-serif; color:var(--text);
+    }
+
+    .sheet{ width: 210mm; min-height: 297mm; margin: 0 auto; background:white; padding:16mm; box-sizing:border-box; display:flex; align-items:center; justify-content:center; }
+
+    .card{ 
+      width: 118mm; min-height: 170mm; padding: 22mm 20mm; box-sizing:border-box; position:relative; 
+      --frame-url: url('https://zbiroh.b-cdn.net/b.png');
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      text-align:center;
+    }
+    .card::before{
+      content:""; position:absolute; inset:-6mm; background-image: var(--frame-url);
+      background-repeat:no-repeat; background-position:center; background-size:contain; opacity:1; pointer-events:none;
+    }
+
+    .title{ font-family:"Cinzel", serif; font-weight:800; font-size: 22pt; letter-spacing: .5px; color:var(--accent); text-align:center; margin:0 0 12mm 0; }
+    .names{ list-style:none; padding:0; margin:0; text-align:center; }
+    .names li{ font-size: 14pt; line-height:1.5; margin:2mm 0; font-family:"Lexend", system-ui, sans-serif; }
+    .names li strong{ font-family:"Cinzel", serif; font-weight:700; }
+
+    #controls{ position:sticky; top:0; z-index:999; background:#111; color:#fff; padding:10px 14px; display:flex; gap:8px; align-items:center; justify-content:center; }
+    #controls button{ border:0; padding:8px 12px; font-weight:600; cursor:pointer; border-radius:8px; background:#2b2b2b; }
+    #controls button:hover{ background:#3b3b3b; }
+    #controls input{ padding:8px 10px; border-radius:8px; border:1px solid #444; background:#1c1c1c; color:#fff; }
+  </style>
+</head>
+<body>
+  <div id="controls">
+    <label>Barva akcentu: <input type="color" id="accent" value="#c4a75a"></label>
+    <button onclick="render()">Znovu vykreslit</button>
+    <button onclick="window.print()">Tisk / PDF</button>
+  </div>
+
+  <div id="root"></div>
+
+  <script>
+    const TABLES = [
+      { title: "STŮL č. 1", names: ["Jiří Soukup ml.","Dominika Soukupová","Kryštof Soukup","Matěj Krejčí","Hana Krejčová","Martin Krejčí"]},
+      { title: "STŮL č. 2", names: ["Petr Němec","Eliška Němcová","Matyáš Němec","Lucie Betincová"]},
+      { title: "STŮL č. 3", names: ["Jiří Soukup nejst.","Jana Ženíšková","Pavel Ženíšek","Jakub Říha","Hermína Říhová","Hana Říhová"]},
+      { title: "STŮL č. 4", names: ["Martin Němec","Zuzana Němcová","Petr Hajný","Jitka Hajná","Tomáš Ražný","Veronika Ražná"]},
+      { title: "STŮL č. 5", names: ["Gabriela Holečková","Václav Holeček","Milan Sigmund","Karolína Sigmundová","Jana Sigmundová"]},
+      { title: "STŮL č. 6", names: ["Lenka Škodová","David Škoda","Tereza Škodová","Denisa Škodová"]},
+      { title: "STŮL č. 7", names: ["Jana Černá ml.","Tamara Čepická","Daniel Čepický","Zdeněk Čepický","Jana Vojtová"]},
+      { title: "STŮL č. 8", names: ["Martin Scheinherr","Anna Scheinherr","Andrea Scheinherr","Anna Šulcová","Jakub Strnad"]},
+      { title: "STŮL č. 9", names: ["Marie Němcová","Otakar Němec","Tomáš Němec st.","Tomáš Němec ml.","Lucie Němcová"]},
+      { title: "STŮL č. 10", names: ["Ondřej Malovaný","Katarína Králová","Radoja Simič","Rahela Koruncev","Václav Hrbáček","Alena Hrbáčková"]},
+      { title: "STŮL č. 11", names: ["Markéta Kunz","Romana Saszová","Kateřina Huclová","Jan Hucl","Alžběta Huclová","Magdaléna Huclová"]},
+      { title: "STŮL č. 12", names: ["Lucie Sklenáriková","Ema Sklenáriková","Lukáš Sklenárik","Tomáš Sklenárik ml.","Tomáš Sklenárik st."]}
+    ];
+
+    function cardHTML(data){
+      return `
+      <div class="sheet">
+        <div class="card">
+          <h1 class="title">${data.title}</h1>
+          <ul class="names">
+            ${data.names.map(n => `<li>${n}</li>`).join('')}
+          </ul>
+        </div>
+      </div>`;
+    }
+
+    function render(){
+      const root = document.getElementById('root');
+      const accent = document.getElementById('accent').value;
+      document.documentElement.style.setProperty('--accent', accent);
+      root.innerHTML = TABLES.map(t => cardHTML(t)).join('');
+    }
+
+    render();
+  </script>
+</body>
+</html>
