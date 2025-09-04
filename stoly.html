@@ -9,7 +9,8 @@
     :root{
       --accent:#c4a75a;
       --text:#222;
-      --s:1;  /* globální měřítko (1 = 100 %) */
+      --s:1;               /* globální měřítko (1 = 100 %) */
+      --top-offset:0mm;    /* horní odsazení při režimu "Začátek stránky" */
     }
     *{ box-sizing:border-box; }
 
@@ -22,54 +23,39 @@
       .sheet:last-child{ page-break-after: auto; }
     }
 
-    body{
-      margin:0; background:#e8e8e8;
-      font-family:"Lexend", system-ui, sans-serif; color:var(--text);
-    }
+    body{ margin:0; background:#e8e8e8; font-family:"Lexend", system-ui, sans-serif; color:var(--text); }
 
     /* Ovládací panel */
-    #controls{
-      position:sticky; top:0; z-index:999; background:#111; color:#fff;
-      padding:10px 14px; display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap;
-    }
+    #controls{ position:sticky; top:0; z-index:999; background:#111; color:#fff; padding:10px 14px; display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap; }
     #controls label{ display:flex; align-items:center; gap:6px; }
-    #controls input, #controls select{
-      padding:8px 10px; border-radius:8px; border:1px solid #444; background:#1c1c1c; color:#fff;
-    }
-    #controls button{
-      border:0; padding:8px 12px; font-weight:600; cursor:pointer; border-radius:8px; background:#2b2b2b; color:#fff;
-    }
+    #controls input, #controls select{ padding:8px 10px; border-radius:8px; border:1px solid #444; background:#1c1c1c; color:#fff; }
+    #controls button{ border:0; padding:8px 12px; font-weight:600; cursor:pointer; border-radius:8px; background:#2b2b2b; color:#fff; }
     #controls button:hover{ background:#3b3b3b; }
 
     /* A4 list */
-    .sheet{
-      width:210mm; min-height:297mm; margin:0 auto; background:#fff; padding:10mm;
-      display:flex; align-items:center; justify-content:center;   /* vert. střed */
-    }
-    .valign-top .sheet{ justify-content:flex-start; }             /* začátek stránky */
+    .sheet{ width:210mm; height:calc(297mm - 20mm); margin:0 auto; background:#fff; padding:10mm; display:flex; align-items:center; justify-content:center; }
+    .valign-top .sheet{ justify-content:flex-start; }
 
     /* Karta s rámečkem */
     .card{
-      width:calc(175mm * var(--s));
-      min-height:calc(245mm * var(--s));
+      width:min(calc(175mm * var(--s)), calc(210mm - 20mm));
+      min-height:min(calc(245mm * var(--s)), calc(297mm - 20mm));
       padding:calc(32mm * var(--s)) calc(28mm * var(--s));
       position:relative; text-align:center;
       display:flex; flex-direction:column; align-items:center; justify-content:center;
       max-width:100%; max-height:100%;
+      margin-top:0;
     }
+    .valign-top .card{ margin-top: var(--top-offset); }
+
     .card::before{
       content:""; position:absolute; inset:calc(-4mm * var(--s));
       background-image:url('https://zbiroh.b-cdn.net/b.png');
-      background-repeat:no-repeat; background-position:center; background-size:contain;
-      opacity:1; pointer-events:none;
+      background-repeat:no-repeat; background-position:center center; background-size:contain; opacity:1; pointer-events:none;
     }
 
     /* Typo */
-    .title{
-      font-family:"Cinzel", serif; font-weight:800;
-      font-size:calc(30pt * var(--s)); color:var(--accent);
-      margin:0 0 calc(16mm * var(--s)) 0;
-    }
+    .title{ font-family:"Cinzel", serif; font-weight:800; font-size:calc(30pt * var(--s)); color:var(--accent); margin:0 0 calc(16mm * var(--s)) 0; }
     .names{ list-style:none; padding:0; margin:0; }
     .names li{ font-size:calc(18pt * var(--s)); line-height:1.6; margin:calc(3mm * var(--s)) 0; }
   </style>
@@ -77,13 +63,14 @@
 <body>
   <div id="controls">
     <label>Barva: <input type="color" id="accent" value="#c4a75a"></label>
-    <label>Měřítko (%): <input type="number" id="scale" min="80" max="130" step="5" value="110" style="width:80px"></label>
+    <label>Měřítko (%): <input type="number" id="scale" min="80" max="160" step="5" value="120" style="width:80px"></label>
     <label>Umístění:
       <select id="valign">
         <option value="center">Uprostřed rámečku</option>
         <option value="top">Začátek stránky</option>
       </select>
     </label>
+    <label>Horní odsazení (mm): <input type="number" id="topoffset" min="0" max="60" step="2" value="0" style="width:80px"></label>
     <button onclick="apply()">Použít</button>
     <button onclick="window.print()">Tisk / PDF</button>
   </div>
@@ -123,13 +110,16 @@
 
     function apply(){
       const accent = document.getElementById('accent').value;
-      const scale = Math.max(0.5, (parseFloat(document.getElementById('scale').value)||100)/100);
+      const rawScale = parseFloat(document.getElementById('scale').value)||100;
+      const scale = Math.max(0.6, rawScale/100); // až 160 % (reálný strop hlídá CSS přes min())
       const valign = document.getElementById('valign').value;
+      const topOffset = parseFloat(document.getElementById('topoffset').value)||0;
 
       document.documentElement.style.setProperty('--accent', accent);
       document.documentElement.style.setProperty('--s', scale.toString());
-      document.body.classList.toggle('valign-top', valign === 'top');
+      document.documentElement.style.setProperty('--top-offset', topOffset + 'mm');
 
+      document.body.classList.toggle('valign-top', valign === 'top');
       render();
     }
 
