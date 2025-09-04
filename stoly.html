@@ -4,37 +4,87 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Zasedací pořádek – finální verze</title>
-  <!-- Google Fonts (Cinzel + Lexend) -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root{
       --accent:#c4a75a;
       --text:#222;
-      --s:1; /* globální měřítko (1 = 100 %) */
+      --s:1;  /* globální měřítko (1 = 100 %) */
+    }
+    *{ box-sizing:border-box; }
+
+    /* Tisk */
+    @page{ size:A4; margin:10mm; }
+    @media print{
+      body{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      #controls{ display:none !important; }
+      .sheet{ page-break-after: always; }
+      .sheet:last-child{ page-break-after: auto; }
     }
 
-    @page { size: A4; margin: 10mm; }
-    @media print { 
-      body{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      #controls{ position:sticky; top:0; z-index:999; background:#111; color:#fff; padding:10px 14px; display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap; }
+    body{
+      margin:0; background:#e8e8e8;
+      font-family:"Lexend", system-ui, sans-serif; color:var(--text);
+    }
+
+    /* Ovládací panel */
+    #controls{
+      position:sticky; top:0; z-index:999; background:#111; color:#fff;
+      padding:10px 14px; display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap;
+    }
     #controls label{ display:flex; align-items:center; gap:6px; }
-    #controls button{ border:0; padding:8px 12px; font-weight:600; cursor:pointer; border-radius:8px; background:#2b2b2b; }
+    #controls input, #controls select{
+      padding:8px 10px; border-radius:8px; border:1px solid #444; background:#1c1c1c; color:#fff;
+    }
+    #controls button{
+      border:0; padding:8px 12px; font-weight:600; cursor:pointer; border-radius:8px; background:#2b2b2b; color:#fff;
+    }
     #controls button:hover{ background:#3b3b3b; }
-    #controls input, #controls select{ padding:8px 10px; border-radius:8px; border:1px solid #444; background:#1c1c1c; color:#fff; }
-    .valign-top .sheet{ justify-content:flex-start; }
+
+    /* A4 list */
+    .sheet{
+      width:210mm; min-height:297mm; margin:0 auto; background:#fff; padding:10mm;
+      display:flex; align-items:center; justify-content:center;   /* vert. střed */
+    }
+    .valign-top .sheet{ justify-content:flex-start; }             /* začátek stránky */
+
+    /* Karta s rámečkem */
+    .card{
+      width:calc(175mm * var(--s));
+      min-height:calc(245mm * var(--s));
+      padding:calc(32mm * var(--s)) calc(28mm * var(--s));
+      position:relative; text-align:center;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      max-width:100%; max-height:100%;
+    }
+    .card::before{
+      content:""; position:absolute; inset:calc(-4mm * var(--s));
+      background-image:url('https://zbiroh.b-cdn.net/b.png');
+      background-repeat:no-repeat; background-position:center; background-size:contain;
+      opacity:1; pointer-events:none;
+    }
+
+    /* Typo */
+    .title{
+      font-family:"Cinzel", serif; font-weight:800;
+      font-size:calc(30pt * var(--s)); color:var(--accent);
+      margin:0 0 calc(16mm * var(--s)) 0;
+    }
+    .names{ list-style:none; padding:0; margin:0; }
+    .names li{ font-size:calc(18pt * var(--s)); line-height:1.6; margin:calc(3mm * var(--s)) 0; }
   </style>
 </head>
 <body>
   <div id="controls">
-    <label>Barva akcentu: <input type="color" id="accent" value="#c4a75a"></label>
-    <label>Měřítko (%): <input type="number" id="scale" min="80" max="125" step="5" value="100" style="width:80px"></label>
-    <label>Umístění: 
+    <label>Barva: <input type="color" id="accent" value="#c4a75a"></label>
+    <label>Měřítko (%): <input type="number" id="scale" min="80" max="130" step="5" value="110" style="width:80px"></label>
+    <label>Umístění:
       <select id="valign">
         <option value="center">Uprostřed rámečku</option>
-        <option value="top">Nahoru (začátek stránky)</option>
+        <option value="top">Začátek stránky</option>
       </select>
     </label>
-    <button onclick="render()">Použít</button>
+    <button onclick="apply()">Použít</button>
     <button onclick="window.print()">Tisk / PDF</button>
   </div>
 
@@ -56,35 +106,35 @@
       { title: "STŮL č. 12", names: ["Lucie Sklenáriková","Ema Sklenáriková","Lukáš Sklenárik","Tomáš Sklenárik ml.","Tomáš Sklenárik st."]}
     ];
 
-    function cardHTML(data){
+    function cardHTML(d){
       return `
-      <div class="sheet">
-        <div class="card">
-          <h1 class="title">${data.title}</h1>
-          <ul class="names">
-            ${data.names.map(n => `<li>${n}</li>`).join('')}
-          </ul>
-        </div>
-      </div>`;
+        <div class="sheet">
+          <div class="card">
+            <h1 class="title">${d.title}</h1>
+            <ul class="names">${d.names.map(n=>`<li>${n}</li>`).join('')}</ul>
+          </div>
+        </div>`;
     }
 
     function render(){
       const root = document.getElementById('root');
-      const accent = document.getElementById('accent').value;
-      const scaleVal = parseFloat(document.getElementById('scale').value || '100');
-      const valign = document.getElementById('valign').value;
-
-      // nastavit barvu a měřítko
-      document.documentElement.style.setProperty('--accent', accent);
-      document.documentElement.style.setProperty('--s', (scaleVal/100).toString());
-
-      // vertical align class toggle
-      document.body.classList.toggle('valign-top', valign === 'top');
-
-      root.innerHTML = TABLES.map(t => cardHTML(t)).join('');
+      root.innerHTML = TABLES.map(cardHTML).join('');
     }
 
-    render();
+    function apply(){
+      const accent = document.getElementById('accent').value;
+      const scale = Math.max(0.5, (parseFloat(document.getElementById('scale').value)||100)/100);
+      const valign = document.getElementById('valign').value;
+
+      document.documentElement.style.setProperty('--accent', accent);
+      document.documentElement.style.setProperty('--s', scale.toString());
+      document.body.classList.toggle('valign-top', valign === 'top');
+
+      render();
+    }
+
+    // start
+    apply();
   </script>
 </body>
 </html>
