@@ -22,11 +22,11 @@
       margin:0; background:#e8e8e8; font-family:"Lexend", system-ui, sans-serif; color:var(--text);
     }
 
-    .sheet{ width: 210mm; min-height: 297mm; margin: 0 auto; background:white; padding:16mm; box-sizing:border-box; display:flex; align-items:center; justify-content:center; }
+    .sheet{ width: 210mm; min-height: 297mm; margin: 0 auto; background:white; padding:16mm; box-sizing:border-box; display:flex; align-items:center; justify-content:flex-start; }
 
     .card{ 
       width: 118mm; min-height: 170mm; padding: 22mm 20mm; box-sizing:border-box; position:relative; 
-      --frame-url: url('frame.png'); /* <-- sem vlož exportovaný rámeček */
+      --frame-url: url('https://zbiroh.b-cdn.net/Obra%C5%9Fzek1.png'); /* <-- sem vlož exportovaný rámeček */
       display:flex; flex-direction:column; align-items:center; justify-content:center;
     }
     .card::before{
@@ -56,19 +56,94 @@
 
   <script>
     const TABLES = [
-      {
-        title: "STŮL č. 1",
-        names: [
-          "Jiří Soukup ml.",
-          "Dominika Soukupová",
-          "Kryštof Soukup",
-          "Matěj Krejčí",
-          "Hana Krejčová",
-          "Martin Krejčí"
-        ]
-      }
-      // sem přidáme další stoly až pošleš všechna jména
-    ];
+  { title: "STŮL č. 1", names: [
+    "Jiří Soukup ml.",
+    "Dominika Soukupová",
+    "Kryštof Soukup",
+    "Matěj Krejčí",
+    "Hana Krejčová",
+    "Martin Krejčí"
+  ]},
+  { title: "STŮL č. 2", names: [
+    "Petr Němec",
+    "Eliška Němcová",
+    "Matyáš Němec",
+    "Lucie Betincová"
+  ]},
+  { title: "STŮL č. 3", names: [
+    "Jiří Soukup nejst.",
+    "Jana Ženíšková",
+    "Pavel Ženíšek",
+    "Jakub Říha",
+    "Hermína Říhová",
+    "Hana Říhová"
+  ]},
+  { title: "STŮL č. 4", names: [
+    "Martin Němec",
+    "Zuzana Němcová",
+    "Petr Hajný",
+    "Jitka Hajná",
+    "Tomáš Ražný",
+    "Veronika Ražná"
+  ]},
+  { title: "STŮL č. 5", names: [
+    "Gabriela Holečková",
+    "Václav Holeček",
+    "Milan Sigmund",
+    "Karolína Sigmundová",
+    "Jana Sigmundová"
+  ]},
+  { title: "STŮL č. 6", names: [
+    "Lenka Škodová",
+    "David Škoda",
+    "Tereza Škodová",
+    "Denisa Škodová"
+  ]},
+  { title: "STŮL č. 7", names: [
+    "Jana Černá ml.",
+    "Tamara Čepická",
+    "Daniel Čepický",
+    "Zdeněk Čepický",
+    "Jana Vojtová"
+  ]},
+  { title: "STŮL č. 8", names: [
+    "Martin Scheinherr",
+    "Anna Scheinherr",
+    "Andrea Scheinherr",
+    "Anna Šulcová",
+    "Jakub Strnad"
+  ]},
+  { title: "STŮL č. 9", names: [
+    "Marie Němcová",
+    "Otakar Němec",
+    "Tomáš Němec st.",
+    "Tomáš Němec ml.",
+    "Lucie Němcová"
+  ]},
+  { title: "STŮL č. 10", names: [
+    "Ondřej Malovaný",
+    "Katarína Králová",
+    "Radoja Simič",
+    "Rahela Koruncev",
+    "Václav Hrbáček",
+    "Alena Hrbáčková"
+  ]},
+  { title: "STŮL č. 11", names: [
+    "Markéta Kunz",
+    "Romana Saszová",
+    "Kateřina Huclová",
+    "Jan Hucl",
+    "Alžběta Huclová",
+    "Magdaléna Huclová"
+  ]},
+  { title: "STŮL č. 12", names: [
+    "Lucie Sklenáriková",
+    "Ema Sklenáriková",
+    "Lukáš Sklenárik",
+    "Tomáš Sklenárik ml.",
+    "Tomáš Sklenárik st."
+  ]}
+];
 
     function cardHTML(data){
       return `
