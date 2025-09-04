@@ -4,54 +4,116 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Zasedací pořádek – finální verze</title>
-  <!-- Google Fonts (Cinzel + Lexend) -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root{
-      --accent:#c4a75a;
-      --text:#222;
+      --accent:#c4a75a;        /* barva nadpisu */
+      --text:#222;             /* barva jmen */
+      --s:1;                   /* globální měřítko (1 = 100 %) */
+      --top-offset:0mm;        /* horní odsazení v režimu "Začátek stránky" */
+      --title-size-pt:28;      /* velikost nadpisu v pt (před škálou) */
+      --name-size-pt:16;       /* velikost jmen v pt (před škálou) */
+      --gap-mm:8;              /* mezera nadpis → jména v mm (před škálou) */
+      --frame-url:url('https://zbiroh.b-cdn.net/b.png'); /* URL rámečku */
+      --font-title:"Cinzel", serif;    /* rodina písma nadpis */
+      --font-body:"Lexend", system-ui, sans-serif; /* rodina písma jmen */
     }
+    *{ box-sizing:border-box; }
 
-    @page { size: A4; margin: 16mm; }
-    @media print { 
+    /* Tisk */
+    @page{ size:A4; margin:10mm; }
+    @media print{
       body{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       #controls{ display:none !important; }
       .sheet{ page-break-after: always; }
       .sheet:last-child{ page-break-after: auto; }
     }
 
-    body{
-      margin:0; background:#e8e8e8; font-family:"Lexend", system-ui, sans-serif; color:var(--text);
-    }
+    body{ margin:0; background:#e8e8e8; font-family:"Lexend", system-ui, sans-serif; color:var(--text); }
 
-    .sheet{ width: 210mm; min-height: 297mm; margin: 0 auto; background:white; padding:16mm; box-sizing:border-box; display:flex; align-items:center; justify-content:center; }
-
-    .card{ 
-      width: 150mm; min-height: 210mm; padding: 28mm 24mm; box-sizing:border-box; position:relative; 
-      --frame-url: url('https://zbiroh.b-cdn.net/b.png');
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-      text-align:center;
-    }
-    .card::before{
-      content:""; position:absolute; inset:-6mm; background-image: var(--frame-url);
-      background-repeat:no-repeat; background-position:center; background-size:contain; opacity:1; pointer-events:none;
-    }
-
-    .title{ font-family:"Cinzel", serif; font-weight:800; font-size: 26pt; letter-spacing: .5px; color:var(--accent); text-align:center; margin:0 0 14mm 0; }
-    .names{ list-style:none; padding:0; margin:0; text-align:center; }
-    .names li{ font-size: 16pt; line-height:1.6; margin:3mm 0; font-family:"Lexend", system-ui, sans-serif; }
-    .names li strong{ font-family:"Cinzel", serif; font-weight:700; }
-
-    #controls{ position:sticky; top:0; z-index:999; background:#111; color:#fff; padding:10px 14px; display:flex; gap:8px; align-items:center; justify-content:center; }
-    #controls button{ border:0; padding:8px 12px; font-weight:600; cursor:pointer; border-radius:8px; background:#2b2b2b; }
+    /* Ovládací panel */
+    #controls{ position:sticky; top:0; z-index:999; background:#111; color:#fff; padding:10px 14px; display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap; }
+    #controls label{ display:flex; align-items:center; gap:6px; }
+    #controls input, #controls select{ padding:8px 10px; border-radius:8px; border:1px solid #444; background:#1c1c1c; color:#fff; }
+    #controls input[type="text"]{ min-width:280px; }
+    #controls button{ border:0; padding:8px 12px; font-weight:600; cursor:pointer; border-radius:8px; background:#2b2b2b; color:#fff; }
     #controls button:hover{ background:#3b3b3b; }
-    #controls input{ padding:8px 10px; border-radius:8px; border:1px solid #444; background:#1c1c1c; color:#fff; }
+
+    /* A4 list */
+    .sheet{ width:210mm; height:calc(297mm - 20mm); margin:0 auto; background:#fff; padding:10mm; display:flex; align-items:center; justify-content:center; }
+    .valign-top .sheet{ justify-content:flex-start; }
+
+    /* Karta s rámečkem */
+    .card{
+      width:min(calc(175mm * var(--s)), calc(210mm - 20mm));
+      min-height:min(calc(245mm * var(--s)), calc(297mm - 20mm));
+      padding:calc(28mm * var(--s)) calc(26mm * var(--s)); /* menší padding, ať je text blíž titulu */
+      position:relative; text-align:center;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      max-width:100%; max-height:100%;
+      margin-top:0;
+    }
+    .valign-top .card{ margin-top: var(--top-offset); }
+
+    .card::before{
+      content:""; position:absolute; inset:calc(-4mm * var(--s));
+      background-image:var(--frame-url);
+      background-repeat:no-repeat; background-position:center center; background-size:contain; opacity:1; pointer-events:none;
+    }
+
+    /* Typo */
+    .title{ font-family:var(--font-title); font-weight:800; font-size:calc(var(--title-size-pt) * 1pt * var(--s)); color:var(--accent); margin:0 0 calc(var(--gap-mm) * 1mm * var(--s)) 0; }
+    .names{ list-style:none; padding:0; margin:0; }
+    .names li{ font-family:var(--font-body); font-size:calc(var(--name-size-pt) * 1pt * var(--s)); line-height:1.55; margin:calc(2.5mm * var(--s)) 0; color:var(--text); }
   </style>
 </head>
 <body>
   <div id="controls">
-    <label>Barva akcentu: <input type="color" id="accent" value="#c4a75a"></label>
-    <button onclick="render()">Znovu vykreslit</button>
+    <label>Barva nadpisu: <input type="color" id="accent" value="#c4a75a"></label>
+    <label>Barva jmen: <input type="color" id="textcolor" value="#222222"></label>
+    <label>Měřítko (%): <input type="number" id="scale" min="80" max="160" step="5" value="120" style="width:80px"></label>
+    <label>Umístění:
+      <select id="valign">
+        <option value="center">Uprostřed rámečku</option>
+        <option value="top">Začátek stránky</option>
+      </select>
+    </label>
+    <label>Horní odsazení (mm): <input type="number" id="topoffset" min="0" max="80" step="2" value="0" style="width:80px"></label>
+
+    <label>Velikost nadpisu (pt): <input type="number" id="titleSize" min="18" max="40" step="1" value="28" style="width:80px"></label>
+    <label>Velikost jmen (pt): <input type="number" id="nameSize" min="12" max="28" step="1" value="16" style="width:80px"></label>
+    <label>Mezera (mm): <input type="number" id="gap" min="2" max="20" step="1" value="8" style="width:80px"></label>
+
+    <label>Font nadpis:
+      <select id="fontTitle">
+        <option value='"Cinzel", serif'>Cinzel</option>
+        <option value='"Playfair Display", serif'>Playfair Display</option>
+        <option value='"Cormorant Garamond", serif'>Cormorant Garamond</option>
+        <option value='Georgia, serif'>Georgia</option>
+        <option value='"Times New Roman", Times, serif'>Times New Roman</option>
+        <option value='"Noto Serif", serif'>Noto Serif</option>
+        <option value='"Montserrat", sans-serif'>Montserrat</option>
+        <option value='"Inter", sans-serif'>Inter</option>
+      </select>
+    </label>
+
+    <label>Font jmen:
+      <select id="fontBody">
+        <option value='"Lexend", system-ui, sans-serif'>Lexend</option>
+        <option value='"Open Sans", sans-serif'>Open Sans</option>
+        <option value='"Roboto", sans-serif'>Roboto</option>
+        <option value='"Lato", sans-serif'>Lato</option>
+        <option value='"Noto Sans", sans-serif'>Noto Sans</option>
+        <option value='"Montserrat", sans-serif'>Montserrat</option>
+        <option value='"Inter", sans-serif'>Inter</option>
+      </select>
+    </label>
+
+    <label>Vlastní Google fonty (volitelné): <input type="text" id="customFonts" placeholder="např. Cormorant Garamond; Playfair Display" /></label>
+
+    <label>URL rámečku: <input type="text" id="frameUrl" value="https://zbiroh.b-cdn.net/b.png" /></label>
+
+    <button onclick="apply(true)">Použít</button>
     <button onclick="window.print()">Tisk / PDF</button>
   </div>
 
@@ -73,26 +135,85 @@
       { title: "STŮL č. 12", names: ["Lucie Sklenáriková","Ema Sklenáriková","Lukáš Sklenárik","Tomáš Sklenárik ml.","Tomáš Sklenárik st."]}
     ];
 
-    function cardHTML(data){
+    const GOOGLE_FONTS = new Set([
+      'Cinzel','Lexend','Playfair Display','Cormorant Garamond','Montserrat','Inter','Roboto','Lato','Open Sans','Noto Serif','Noto Sans'
+    ]);
+
+    function gfFamilyParam(name){
+      // jednoduché načtení rodiny (bez řešení všech vah – tohle pro tisk stačí)
+      const fam = name.trim().replace(/\s+/g,'+');
+      return `family=${fam}:wght@400;600;700&display=swap`;
+    }
+
+    function ensureGoogleFont(name){
+      if(!name) return;
+      const clean = name.replace(/\,.*/, '').replace(/"/g,'').trim();
+      if(!GOOGLE_FONTS.has(clean)) return; // systémové netřeba
+      const id = 'gf-'+clean.replace(/\s+/g,'-').toLowerCase();
+      if(document.getElementById(id)) return;
+      const link = document.createElement('link');
+      link.id = id; link.rel = 'stylesheet';
+      link.href = 'https://fonts.googleapis.com/css2?'+gfFamilyParam(clean);
+      document.head.appendChild(link);
+    }
+
+    function cardHTML(d){
       return `
-      <div class="sheet">
-        <div class="card">
-          <h1 class="title">${data.title}</h1>
-          <ul class="names">
-            ${data.names.map(n => `<li>${n}</li>`).join('')}
-          </ul>
-        </div>
-      </div>`;
+        <div class="sheet">
+          <div class="card">
+            <h1 class="title">${d.title}</h1>
+            <ul class="names">${d.names.map(n=>`<li>${n}</li>`).join('')}</ul>
+          </div>
+        </div>`;
     }
 
     function render(){
-      const root = document.getElementById('root');
-      const accent = document.getElementById('accent').value;
-      document.documentElement.style.setProperty('--accent', accent);
-      root.innerHTML = TABLES.map(t => cardHTML(t)).join('');
+      document.getElementById('root').innerHTML = TABLES.map(cardHTML).join('');
     }
 
-    render();
+    function apply(loadFonts=false){
+      const accent = document.getElementById('accent').value;
+      const textcolor = document.getElementById('textcolor').value;
+      const rawScale = parseFloat(document.getElementById('scale').value)||100;
+      const scale = Math.max(0.6, rawScale/100); // až ~160 %
+      const valign = document.getElementById('valign').value;
+      const topOffset = parseFloat(document.getElementById('topoffset').value)||0;
+      const titleSize = parseFloat(document.getElementById('titleSize').value)||28;
+      const nameSize = parseFloat(document.getElementById('nameSize').value)||16;
+      const gap = parseFloat(document.getElementById('gap').value)||8;
+      const fontTitle = document.getElementById('fontTitle').value;
+      const fontBody  = document.getElementById('fontBody').value;
+      const frameUrl  = document.getElementById('frameUrl').value.trim();
+      const customFonts = document.getElementById('customFonts').value || '';
+
+      document.documentElement.style.setProperty('--accent', accent);
+      document.documentElement.style.setProperty('--text', textcolor);
+      document.documentElement.style.setProperty('--s', scale.toString());
+      document.documentElement.style.setProperty('--top-offset', topOffset + 'mm');
+      document.documentElement.style.setProperty('--title-size-pt', titleSize);
+      document.documentElement.style.setProperty('--name-size-pt', nameSize);
+      document.documentElement.style.setProperty('--gap-mm', gap);
+      document.documentElement.style.setProperty('--font-title', fontTitle);
+      document.documentElement.style.setProperty('--font-body', fontBody);
+      if(frameUrl){ document.documentElement.style.setProperty('--frame-url', `url('${frameUrl}')`); }
+
+      document.body.classList.toggle('valign-top', valign === 'top');
+
+      if(loadFonts){
+        // načti google fonty ze selectů
+        [fontTitle, fontBody].forEach(f=>{
+          const clean = f.replace(/\,.*/, '').replace(/"/g,'');
+          ensureGoogleFont(clean);
+        });
+        // a případné vlastní
+        customFonts.split(';').forEach(name=> ensureGoogleFont(name));
+      }
+
+      render();
+    }
+
+    // start
+    apply(true);
   </script>
 </body>
 </html>
